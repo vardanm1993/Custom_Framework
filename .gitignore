@@ -1,0 +1,5 @@
+# PhpStorm and IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
