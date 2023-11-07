@@ -10,7 +10,7 @@ services:
       - "80:80"
     depends_on:
       - app
-    container_name: framework_nginx
+    container_name: ${WEB_CONTAINER_NAME}
 
   app:
     build:
@@ -24,7 +24,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
-    container_name: framework_app
+    container_name: ${APP_CONTAINER_NAME}
     depends_on:
       - db
 
@@ -51,7 +51,7 @@ services:
       PMA_PASSWORD: ${PMA_PASSWORD}
     ports:
       - "8081:80"
-    container_name: framework_phpmyadmin
+    container_name: ${PHPMYADMIN_CONTAINER_NAME}
     depends_on:
       - db
 

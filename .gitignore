@@ -3,3 +3,6 @@
 *.iml
 *.iws
 *.ipr
+
+#custom
+vendor
