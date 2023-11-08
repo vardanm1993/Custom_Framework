@@ -21,7 +21,7 @@ class Container implements ContainerInterface
 
     public function has(string $id): bool
     {
-        return $this->bindings[$id];
+        return (bool)$this->bindings[$id];
     }
 
     public function bind(string $id, callable $concrete)
