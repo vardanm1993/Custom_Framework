@@ -13,8 +13,6 @@ class Container implements ContainerInterface
 {
     private array $bindings = [];
 
-    private array $resolved = [];
-
     /**
      * @param string $id
      * @return mixed
@@ -23,23 +21,24 @@ class Container implements ContainerInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function get(string $id):mixed
+    public function get(string $id): mixed
     {
         if ($this->has($id) === false) {
             return $this->resolve($id);
         }
 
-        return $this->bindings[$id];
+        return Session::get('resolved')[$id];
     }
 
     public function has(string $id): bool
     {
-        return isset($this->bindings[$id]);
+        return isset(Session::get('resolved')[$id]);
     }
 
     public function bind(string $id, callable $concrete): void
     {
         $this->bindings[$id] = $concrete($this);
+        Session::set('resolved', $this->bindings);
     }
 
     /**
@@ -59,15 +58,15 @@ class Container implements ContainerInterface
 
         $constructor = $reflectionClass->getConstructor();
 
-        if (!$constructor) {
-            return new $id;
+        if (!$constructor || !$constructor->getParameters()) {
+
+            $this->bindings[$id] = new $id;
+            Session::set('resolved', $this->bindings);
+
+            return $_SESSION['resolved'][$id];
         }
 
         $parameters = $constructor->getParameters();
-
-        if (!$parameters) {
-            return new $id;
-        }
 
         $dependencies = array_map(function (\ReflectionParameter $param) use ($id) {
             $name = $param->getName();
@@ -94,7 +93,10 @@ class Container implements ContainerInterface
             );
 
 
-        },$parameters);
+        }, $parameters);
+
+        $this->bindings[$id] = $reflectionClass->newInstanceArgs($dependencies);
+        Session::set('resolved', $this->bindings);
 
         return $reflectionClass->newInstanceArgs($dependencies);
     }
