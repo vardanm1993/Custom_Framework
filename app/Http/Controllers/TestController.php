@@ -12,6 +12,10 @@ class MainController
     }
     public function index()
     {
-        dd($_SESSION['resolved']) ;
+        echo "This is home page";
+    }
+    public function show($id)
+    {
+        echo $id;
     }
 }
