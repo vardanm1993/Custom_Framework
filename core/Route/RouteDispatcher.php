@@ -30,16 +30,15 @@ class RouteDispatcher
      * @return void
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws NotFoundException
      */
     public function run(): void
     {
         $this->saveRequestUri();
         $this->setParams();
         $this->makeRegexpRequest();
-        try {
-            $this->process();
-        } catch (NotFoundException $e) {
-        }
+        $this->process();
+
     }
 
 
@@ -83,7 +82,9 @@ class RouteDispatcher
     {
         $requestUriArray = explode('/', $this->requestUri);
 
+
         if (!empty($this->routeParams)) {
+
             foreach ($this->routeParams as $paramKey => $paramValue) {
                 if (!isset($requestUriArray[$paramKey])) {
                     return;
@@ -93,6 +94,7 @@ class RouteDispatcher
                 $requestUriArray[$paramKey] = '{.*}';
             }
         }
+
 
         $this->requestUri = implode('/', $requestUriArray);
         $this->prepareRegexp();
@@ -116,38 +118,51 @@ class RouteDispatcher
      */
     private function process(): void
     {
-        if (preg_match("/$this->requestUri/", $this->routeConfig->route)) {
-            $this->render();
+
+        $route = "/" . $this->routeConfig->route . "/";
+        $request = "/" . $this->requestUri . "/";
+
+        if (count($this->requestParams) > 0) {
+            if (preg_match($request, $route)) {
+                $this->requestUri = $route;
+            }
         }
 
-        throw new NotFoundException('404');
+        $this->render();
+
     }
 
     /**
-     * @return never
+     * @return void
      * @throws ContainerExceptionInterface
      * @throws NotFoundException
      * @throws NotFoundExceptionInterface
      */
-    private function render(): never
+    private function render(): void
     {
         $method = $this->request->getMethod();
-        $callback = Route::getRoutes()[$method][$this->routeConfig->route]->callback ?? false;
+        $routes = Route::getRoutes();
 
-        if (!$callback) {
-            throw new NotFoundException('404');
-        }
+        if (isset($routes[$method])) {
+            $cleanedUri = self::clean($this->requestUri);
 
-        if (is_array($callback)) {
-            try {
-                $callback[0] = App::$container->get($callback[0]);
-            } catch (ContainerException|\ReflectionException $e) {
+            if (isset($routes[$method][$cleanedUri])) {
+                $callback = $routes[$method][$cleanedUri]->callback ?? false;
+
+                if ($callback) {
+                    if (is_array($callback)) {
+                        try {
+                            $callback[0] = App::$container->get($callback[0]);
+                        } catch (ContainerException|\ReflectionException $e) {
+                        }
+                    }
+
+                    echo call_user_func($callback, ...$this->requestParams);
+                    die();
+                }
             }
         }
 
-        echo call_user_func($callback, ...$this->requestParams);
-        die();
+        throw new NotFoundException('404');
     }
-
-
 }
