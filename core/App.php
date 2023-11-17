@@ -7,6 +7,7 @@ use Core\Route\Route;
 use Core\Route\RouteDispatcher;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 
 class App
 {
@@ -19,11 +20,14 @@ class App
 
 
     /**
+     * @return void
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws Exception\ContainerException
      * @throws NotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
-    public function run()
+    public function run(): void
     {
         $request = self::$container->get(Request::class);
 
