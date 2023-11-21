@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Core\Controller;
+use Core\Exception\ContainerException;
 use Core\Request;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
-class TestController
+class TestController extends Controller
 {
     public function __construct(protected Request $request)
     {
@@ -20,8 +24,16 @@ class TestController
     {
         echo $id;
     }
+
+    /**
+     * @return mixed
+     * @throws ContainerException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws \ReflectionException
+     */
     public function home()
     {
-        dd($_SESSION['resolved']);
+        return $this->view('welcome');
     }
 }
