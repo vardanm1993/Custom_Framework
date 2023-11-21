@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Core\Exception\NotFoundException;
+
 class Response
 {
     protected int $statusCode = 200;
@@ -27,11 +29,13 @@ class Response
         $this->headers[$name] = $value;
     }
 
+
     /**
      * @param string $view
-     * @return $this
+     * @return void
+     * @throws NotFoundException
      */
-    public function send(string $view): static
+    public function send(string $view): void
     {
         http_response_code($this->statusCode);
 
@@ -39,10 +43,10 @@ class Response
             header("$name: $value");
         }
 
-        if ($view){
-            echo $view;
+        if (!$view){
+            throw new NotFoundException('404');
         }
 
-        return $this;
+        echo $view;
     }
 }
