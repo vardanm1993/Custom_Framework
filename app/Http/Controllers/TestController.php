@@ -13,11 +13,15 @@ class TestController
 
     public function index()
     {
-        echo "This is home page";
+        echo "This is index page";
     }
 
     public function show($id)
     {
         echo $id;
+    }
+    public function home()
+    {
+        dd($_SESSION['resolved']);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Main
+class Test
 {
 
 }
