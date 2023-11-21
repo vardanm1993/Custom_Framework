@@ -2,11 +2,13 @@
 
 use Core\App;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
-require dirname(__DIR__) . '/routes/web.php';
+$root = dirname(__DIR__);
 
-$app = new App();
+require $root . '/vendor/autoload.php';
+require $root . '/routes/web.php';
 
-require dirname(__DIR__) . '/config/app.php';
+$app = new App($root);
+
+require $root . '/config/app.php';
 
 $app->run();

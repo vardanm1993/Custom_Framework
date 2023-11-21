@@ -11,10 +11,12 @@ use ReflectionException;
 
 class App
 {
+    public static string $ROOT_DIR;
     public static Container $container;
 
-    public function __construct()
+    public function __construct(string $root)
     {
+        self::$ROOT_DIR = $root;
         self::$container = new Container();
     }
 
