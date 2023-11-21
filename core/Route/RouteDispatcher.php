@@ -157,7 +157,7 @@ class RouteDispatcher
                         }
                     }
 
-                    echo call_user_func($callback, ...$this->requestParams);
+                    call_user_func($callback, ...$this->requestParams);
                     die();
                 }
             }
