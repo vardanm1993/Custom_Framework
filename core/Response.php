@@ -6,47 +6,48 @@ use Core\Exception\NotFoundException;
 
 class Response
 {
-    protected int $statusCode = 200;
-    protected array $headers = [];
-    protected string $view;
+    protected string $content;
+    protected int $statusCode;
+    protected array $headers;
 
-    /**
-     * @param int $code
-     * @return void
-     */
-    public function setStatusCode(int $code): void
+    public function __construct(string $content = '', int $statusCode = 200, array $headers = [])
     {
-        $this->statusCode = $code;
+        $this->content = $content;
+        $this->statusCode = $statusCode;
+        $this->headers = $headers;
+    }
+
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    public function setStatusCode($statusCode)
+    {
+        $this->statusCode = $statusCode;
+    }
+
+    public function setHeaders($headers)
+    {
+        $this->headers = $headers;
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     * @return void
-     */
-    public function setHeader(string $name, string $value): void
-    {
-        $this->headers[$name] = $value;
-    }
-
-
-    /**
-     * @param string $view
      * @return void
      * @throws NotFoundException
      */
-    public function send(string $view): void
+    public function send(): void
     {
-        http_response_code($this->statusCode);
-
-        foreach ($this->headers as $name => $value) {
-            header("$name: $value");
-        }
-
-        if (!$view){
+        if ($this->content === ''){
             throw new NotFoundException('404');
         }
 
-        echo $view;
+        foreach ($this->headers as $header => $value) {
+            header("$header: $value");
+        }
+
+        http_response_code($this->statusCode);
+
+        echo $this->content;
     }
 }

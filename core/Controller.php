@@ -18,13 +18,14 @@ abstract class Controller
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function view(string $view, array $data = [], int $code = 200): mixed
+    public function view(string $view, array $data = [], int $code = 200, array $headers = ['Content-Type' => 'text/html']): mixed
     {
         $view = App::$container->get(View::class)->renderView($view,$data);
 
         $response = App::$container->get(Response::class);
+        $response->setContent($view);
         $response->setStatusCode($code);
-        $response->setHeader('Content-Type','text/html');
+        $response->setHeaders($headers);
 
         return $response->send($view);
     }

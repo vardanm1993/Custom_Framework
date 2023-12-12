@@ -6,6 +6,7 @@ use Core\App;
 use Core\Exception\ContainerException;
 use Core\Exception\NotFoundException;
 use Core\Request;
+use Core\Response;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -23,7 +24,7 @@ class RouteDispatcher
      */
     public function __construct(protected RouteConfig $routeConfig, protected Request $request)
     {
-
+        
     }
 
     /**
@@ -157,7 +158,16 @@ class RouteDispatcher
                         }
                     }
 
-                    call_user_func($callback, ...$this->requestParams);
+                    $response = call_user_func($callback, ...$this->requestParams);
+
+
+                    if ($response instanceof Response) {
+                        $response->send();
+                    } elseif (is_string($response)) {
+                        echo $response;
+                    }else{
+                        echo "Unexpected response";
+                    }
                     die();
                 }
             }
