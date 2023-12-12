@@ -1,14 +1,12 @@
 <?php
 
-namespace config;
+namespace Core\Route;
 
 use Core\App;
 use Core\Exception\ContainerException;
 use Core\Exception\NotFoundException;
 use Core\Request;
 use Core\Response;
-use Core\Route\Route;
-use Core\Route\RouteConfig;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -160,15 +158,15 @@ class RouteDispatcher
                         }
                     }
 
-
                     $response = call_user_func($callback, ...$this->requestParams);
-                    // Check if the response is an instance of Response
+
+
                     if ($response instanceof Response) {
-                        // Send the response
                         $response->send();
-                    } else {
-                        // Handle the response if it's not an instance of Response
-                        echo "Unexpected response type";
+                    } elseif (is_string($response)) {
+                        echo $response;
+                    }else{
+                        echo "Unexpected response";
                     }
                     die();
                 }
